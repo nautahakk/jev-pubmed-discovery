@@ -1,0 +1,19 @@
+{
+  "name": "jev-discovery",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Can Jev rediscover fish oil for Raynaud's from papers published before 1986?",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test",
+    "fetch:raynaud": "node scripts/1-fetch-raynaud.mjs",
+    "stage1": "node scripts/2-stage1.mjs",
+    "fetch:bridges": "node scripts/3-fetch-bridges.mjs",
+    "stage2": "node scripts/4-stage2.mjs",
+    "rank": "node scripts/5-rank.mjs"
+  }
+}
