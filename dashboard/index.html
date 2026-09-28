@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jev Discovery Live</title>
+<style>
+  :root {
+    --bg: #ffffff; --card: #f6f8fa; --line: #d8dee4; --text: #1f2328; --muted: #57606a;
+    --accent: #0969da; --good: #1a7f37; --bad: #cf222e; --warn: #9a6700; --idle: #8c959f;
+    --s1: 0.5rem; --s2: 1rem; --s3: 1.5rem; --s4: 2rem;
+    --f-xs: 0.75rem; --f-sm: 0.875rem; --f-md: 1rem; --f-lg: 1.25rem; --f-xl: 2rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0d1117; --card: #161b22; --line: #30363d; --text: #e6edf3; --muted: #9198a1;
+      --accent: #4493f8; --good: #3fb950; --bad: #f85149; --warn: #d29922; --idle: #6e7681; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 400 var(--f-md)/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 64rem; margin: 0 auto; padding: var(--s3) var(--s2); }
+  h1 { font-size: var(--f-lg); font-weight: 600; margin: 0; }
+  h2 { font-size: var(--f-sm); font-weight: 600; margin: 0 0 var(--s1); color: var(--muted); }
+  .head { display: flex; align-items: center; justify-content: space-between; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s1); }
+  .sub { color: var(--muted); font-size: var(--f-sm); margin: 0 0 var(--s3); }
+  .pill { font-size: var(--f-xs); font-weight: 600; padding: 0.25rem var(--s1); border-radius: 999px; border: 1px solid currentColor; }
+  .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s1); margin-bottom: var(--s3); }
+  @media (max-width: 40rem) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .rows { grid-template-columns: minmax(0, 1fr) 1fr 6rem; } }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 0.5rem; padding: var(--s2); }
+  .label { font-size: var(--f-xs); color: var(--muted); }
+  .value { font-size: var(--f-xl); font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.25; }
+  .note { font-size: var(--f-xs); color: var(--muted); font-variant-numeric: tabular-nums; }
+  .bar { height: 0.5rem; background: var(--line); border-radius: 0.25rem; overflow: hidden; margin-top: var(--s1); }
+  .bar > div { height: 100%; background: var(--accent); }
+  .section { margin-bottom: var(--s3); }
+  svg text { fill: var(--muted); font-size: 11px; }
+  .mix { display: flex; height: 1rem; border-radius: 0.25rem; overflow: hidden; }
+  .legend { display: flex; flex-wrap: wrap; gap: var(--s2); margin-top: var(--s1); font-size: var(--f-xs); color: var(--muted); }
+  .legend span::before { content: ""; display: inline-block; width: 0.5rem; height: 0.5rem; border-radius: 2px; margin-right: 0.25rem; background: var(--c); }
+  .rows { display: grid; grid-template-columns: minmax(8rem, 14rem) 1fr 7rem; gap: var(--s1) var(--s2); align-items: center; font-size: var(--f-sm); }
+  .rows .bar { margin: 0; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); font-size: var(--f-xs); }
+  .result { border-width: 2px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="head">
+    <h1>Fish-oil rediscovery test, live</h1>
+    <span class="pill" id="state">Connecting…</span>
+  </div>
+  <p class="sub" id="sub">Can Jev find fish oil for Raynaud's using only papers from before 1986?</p>
+
+  <div id="result"></div>
+
+  <div class="grid">
+    <div class="card"><div class="label">Papers read</div><div class="value" id="done">–</div><div class="note" id="doneNote"></div><div class="bar"><div id="doneBar" style="width:0"></div></div></div>
+    <div class="card"><div class="label">Speed</div><div class="value" id="speed">–</div><div class="note">papers a minute (cap 900)</div></div>
+    <div class="card"><div class="label">Time left</div><div class="value" id="eta">–</div><div class="note" id="etaNote"></div></div>
+    <div class="card"><div class="label">Spent so far</div><div class="value" id="cost">–</div><div class="note" id="costNote"></div></div>
+    <div class="card"><div class="label">Characters read</div><div class="value" id="chars">–</div><div class="note" id="charsNote"></div></div>
+    <div class="card"><div class="label">Questions answered</div><div class="value" id="qs">–</div><div class="note" id="qsNote"></div></div>
+  </div>
+
+  <div class="section">
+    <h2>Papers read over time (dashed = projected finish)</h2>
+    <svg id="chart" viewBox="0 0 640 180" width="100%" role="img" aria-label="Papers read over time"></svg>
+  </div>
+
+  <div class="section">
+    <h2>What Jev answered</h2>
+    <div class="mix" id="mix"></div>
+    <div class="legend" id="mixLegend"></div>
+  </div>
+
+  <div class="section">
+    <h2>Progress per measure (↑ / ↓ = higher or lower in Raynaud's)</h2>
+    <div class="rows" id="bridges"></div>
+  </div>
+  <p class="note" id="footer"></p>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+const n0 = (x) => Math.round(x).toLocaleString("en-US");
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const COLORS = { lowers: "--accent", raises: "--warn", no_effect: "--idle", not_reported: "--line" };
+const NAMES = { lowers: "lowers it", raises: "raises it", no_effect: "no clear effect", not_reported: "not reported" };
+const clock = (ms) => new Date(ms).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+const short = (x) => (x >= 1e6 ? (x / 1e6).toFixed(1) + "M" : x >= 1e3 ? (x / 1e3).toFixed(0) + "k" : String(x));
+
+function chart(s) {
+  const W = 640, H = 180, L = 44, R = 12, T = 12, B = 24;
+  const p = s.progress;
+  const end = p.minutesLeft ? s.now + p.minutesLeft * 60000 : s.now;
+  const x = (t) => L + ((t - s.startedAt) / Math.max(end - s.startedAt, 1)) * (W - L - R);
+  const y = (d) => H - B - (d / p.total) * (H - T - B);
+  const line = s.history.map(([t, d], i) => `${i ? "L" : "M"}${x(t).toFixed(1)},${y(d).toFixed(1)}`).join(" ");
+  const last = s.history[s.history.length - 1];
+  let out = "";
+  for (const f of [0, 0.5, 1]) {
+    out += `<line x1="${L}" x2="${W - R}" y1="${y(p.total * f)}" y2="${y(p.total * f)}" stroke="${css("--line")}" />`;
+    out += `<text x="${L - 6}" y="${y(p.total * f) + 4}" text-anchor="end">${short(p.total * f)}</text>`;
+  }
+  out += `<text x="${L}" y="${H - 6}">${clock(s.startedAt)}</text><text x="${W - R}" y="${H - 6}" text-anchor="end">${clock(end)}</text>`;
+  if (!s.finished) out += `<line x1="${x(last[0])}" y1="${y(last[1])}" x2="${x(end)}" y2="${y(p.total)}" stroke="${css("--accent")}" stroke-width="2" stroke-dasharray="4 4" opacity="0.6" />`;
+  out += `<path d="${line}" fill="none" stroke="${css("--accent")}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />`;
+  out += `<circle cx="${x(last[0])}" cy="${y(last[1])}" r="4" fill="${css("--accent")}" />`;
+  $("chart").innerHTML = out;
+}
+
+function render(s) {
+  const p = s.progress;
+  const pct = (p.done / p.total) * 100;
+  $("state").textContent = s.finished ? "Finished" : "Running";
+  $("state").style.color = css(s.finished ? "--good" : "--accent");
+  $("done").textContent = n0(p.done);
+  $("doneNote").textContent = `of ${n0(p.total)} (${pct.toFixed(1)}%)`;
+  $("doneBar").style.width = pct + "%";
+  $("speed").textContent = s.finished ? "–" : n0(p.perMinute);
+  $("eta").textContent = s.finished ? "0 min" : p.minutesLeft == null ? "–" : `${Math.ceil(p.minutesLeft)} min`;
+  $("etaNote").textContent = s.finished ? "done" : p.minutesLeft == null ? "measuring…" : `done around ${clock(s.now + p.minutesLeft * 60000)}`;
+  const projected = p.done ? (p.cost / p.done) * p.total : 0;
+  $("cost").textContent = "$" + p.cost.toFixed(2);
+  $("costNote").textContent = `whole step ≈ $${projected.toFixed(2)} · ${short(p.tokens)} tokens`;
+  $("chars").textContent = short(p.chars);
+  $("charsNote").textContent = `titles + summaries ≈ ${(p.chars / 500000).toFixed(0)} novels' worth`;
+  $("qs").textContent = n0(p.questions);
+  $("qsNote").textContent = `of ${n0(s.questionTotal)} · ${s.errors} errors`;
+  const totalAns = Object.values(p.answers).reduce((a, b) => a + b, 0) || 1;
+  const keys = ["lowers", "raises", "no_effect", "not_reported"];
+  $("mix").innerHTML = keys.map((k) => `<div style="width:${((p.answers[k] ?? 0) / totalAns) * 100}%;background:var(${COLORS[k]})"></div>`).join("");
+  $("mixLegend").innerHTML = keys.map((k) => `<span style="--c:var(${COLORS[k]})">${NAMES[k]} ${n0(p.answers[k] ?? 0)} (${(((p.answers[k] ?? 0) / totalAns) * 100).toFixed(0)}%)</span>`).join("");
+  $("bridges").innerHTML = s.bridges
+    .sort((a, b) => b.total - a.total)
+    .map((b) => `<div>${b.direction === "higher" ? "↑" : "↓"} ${b.measure}</div><div class="bar"><div style="width:${(b.done / b.total) * 100}%"></div></div><div class="num">${n0(b.done)} / ${n0(b.total)}</div>`)
+    .join("");
+  chart(s);
+  $("footer").textContent = `Step 1 (done): ${n0(s.stage1.papers)} Raynaud's papers read, ${s.stage1.bridges} measures found · Started ${clock(s.startedAt)} · Updated ${clock(s.now)}`;
+  if (s.result) {
+    const good = s.result.verdict.startsWith("PASS");
+    $("result").innerHTML = `<div class="card result section" style="border-color:${css(good ? "--good" : "--warn")}"><div class="label">Result</div><div class="value" style="color:${css(good ? "--good" : "--warn")}">${s.result.verdict}</div><div class="note">Best fish-oil rank: ${s.result.bestPrimary ?? "not ranked"} of ${n0(s.result.candidates)} new candidates (pass = top 10)</div></div>`;
+  }
+}
+
+async function tick() {
+  try {
+    const res = await fetch("/stats", { cache: "no-store" });
+    render(await res.json());
+  } catch {
+    $("state").textContent = "Dashboard offline";
+    $("state").style.color = css("--bad");
+  }
+}
+tick();
+setInterval(tick, 2000);
+</script>
+</body>
+</html>
