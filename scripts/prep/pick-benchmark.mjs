@@ -15,7 +15,7 @@ const SIZE = [1000, 6000];        // papers about the disease up to the cutoff (
 const MIN_TREATMENT_PAPERS = 20;  // drug-therapy papers about the disease in the window
 const MIN_ANSWERS = 5;
 const EXISTED = 20;               // an answer must have 20+ papers of its own before the cutoff (so it was findable)
-const WANT = 10;
+const WANT = 50;
 
 async function diseasePool() {
   const labels = new Set();

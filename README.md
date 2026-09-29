@@ -46,9 +46,9 @@ Why it missed: most of the 13 bridges measure overlapping things, like blood flo
 
 ## Next: the hidden-years test
 
-One case can't show whether a rule change helps, and tuning the rules until fish oil ranks higher would only teach the method this one answer. So the next test, in [BENCHMARK.md](BENCHMARK.md), uses 10 diseases picked by code. The method only sees papers up to 1995, and it's scored on whether it points at drugs that researchers first tried between 1996 and 2005. Five practice diseases choose between scoring rules, and five exam diseases give the headline number.
+One case can't show whether a rule change helps, and tuning the rules until fish oil ranks higher would only teach the method this one answer. So the next test, in [BENCHMARK.md](BENCHMARK.md), uses 50 diseases picked by code. The method only sees papers up to 1995, and it's scored on whether it points at drugs that researchers first tried between 1996 and 2005. Twenty-five practice diseases choose between scoring rules, and the other 25 are the exam that gives the headline number.
 
-It's prepared but hasn't run yet.
+It hasn't run yet. Reading the papers for 50 diseases takes on the order of $100 in Jev credits and two days or more of nonstop running, which is more than I can put into it right now.
 
 ## Run it yourself
 
@@ -86,7 +86,7 @@ On Windows PowerShell, set the key with `$env:TYPESAFE_API_KEY="your-key"` inste
 - The idea comes from Don R. Swanson, "Fish oil, Raynaud's syndrome, and undiscovered public knowledge," Perspectives in Biology and Medicine, 1986.
 - Paper data: PubMed and MeSH from the U.S. National Library of Medicine.
 - Model: Jev by TypeSafe.
-- Made by Róbert N. The code was written with Claude Code.
+- Made by Róbert Nikulásson. The code was written with Claude Code.
 
 Built with [Claude Code](https://claude.com/claude-code).
 

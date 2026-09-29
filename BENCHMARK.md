@@ -18,7 +18,10 @@ Picked by `scripts/prep/pick-benchmark.mjs`; the list is in `data/benchmark.json
   - 1,000–6,000 papers indexed with it up to 1995 (Raynaud's had 2,646 up to 1985);
   - 20+ papers in 1996–2005 tagged as drug treatment of it;
   - 5+ hidden answers.
-- The first 10 that qualify are used, split by a seeded shuffle into **5 practice** and **5 exam** diseases.
+- The first 50 that qualify are used, split by a seeded shuffle into **25 practice** and **25 exam** diseases.
+  (Changed from 10 on 2026-09-29, before any Jev call for this test. With 5 exam diseases, a single disease
+  moves the headline by 20 points; 25 exam diseases give a number that means something. The first 10 picked
+  are the same ones as before, because the order is fixed by the seed.)
 - **Hidden answer:** a substance tagged "therapeutic use" in 2+ of those 1996–2005 treatment papers that
   - no paper about the disease from up to 1995 mentions (the method's own "already known" check);
   - isn't a drug-category label (MeSH branch D27, like "Vasodilator Agents");
@@ -77,4 +80,6 @@ Exam diseases' hidden answers stay in `data/benchmark.json` and aren't printed o
 ## Budget
 
 Róbert sets the budget. The run can stop after any disease and pick up again later, because answers are saved.
-Costs are estimated in the prep output, and the actual cost is reported with the results.
+Costs are estimated in the prep output (`scripts/prep/estimate.mjs`), and the actual cost is reported with
+the results. The 10-disease prep priced at about $24 and 10.6 hours of reading before savings from answers
+shared between diseases, so 50 diseases come to roughly five times that.

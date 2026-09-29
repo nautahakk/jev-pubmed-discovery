@@ -34,4 +34,4 @@ for (const d of bench.diseases) {
 const sum = (g, k) => out.filter((o) => o.group === g).reduce((n, o) => n + o[k], 0);
 console.log(`\npractice: about $${sum("practice", "dollars").toFixed(2)}, ${Math.round(sum("practice", "minutes") / 60 * 10) / 10} h`);
 console.log(`exam:     about $${sum("exam", "dollars").toFixed(2)}, ${Math.round(sum("exam", "minutes") / 60 * 10) / 10} h`);
-console.log(`all 10:   about $${total.toFixed(2)}, ${Math.round(totalMin / 60 * 10) / 10} h (before savings from answers shared between diseases)`);
+console.log(`all ${out.length}:   about $${total.toFixed(2)}, ${Math.round(totalMin / 60 * 10) / 10} h (before savings from answers shared between diseases)`);
