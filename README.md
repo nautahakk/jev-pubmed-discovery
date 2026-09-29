@@ -22,9 +22,9 @@ Jev was trained long after 1986, so it probably knows the answer. To keep that k
 
 The full rules are in [PROTOCOL.md](PROTOCOL.md), committed in `3ecfd9d` before step 1 ran. A pass meant a fish oil substance in the top 10 new candidates. Top 50 counted as partial.
 
-## Result: a miss
+## Result: #74 of 1,446, short of the bar
 
-Eicosapentaenoic acid (EPA, one of the main fatty acids in fish oil) was the best-ranked fish oil substance at #74 of 1,446 new candidates. That's the top 5%, but short of the top-10 bar, so by the rules this run fails.
+Eicosapentaenoic acid (EPA, one of the main fatty acids in fish oil) was the best-ranked fish oil substance at #74 of 1,446 new candidates. That's about the top 5%, but short of the top-10 bar, so by the rules this run fails.
 
 What worked:
 
