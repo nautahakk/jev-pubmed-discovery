@@ -48,7 +48,7 @@ Why it missed: most of the 13 bridges measure overlapping things, like blood flo
 
 One case can't show whether a rule change helps, and tuning the rules until fish oil ranks higher would only teach the method this one answer. So the next test, in [BENCHMARK.md](BENCHMARK.md), uses 50 diseases picked by code. The method only sees papers up to 1995, and it's scored on whether it points at drugs that researchers first tried between 1996 and 2005. Twenty-five practice diseases choose between scoring rules, and the other 25 are the exam that gives the headline number.
 
-It hasn't run yet. Reading the papers for 50 diseases takes on the order of $100 in Jev credits and two days or more of nonstop running, which is more than I can put into it right now.
+It hasn't run yet. The prep prices it at about $115 in Jev credits and 50 hours of nonstop reading. Many diseases share the same body measures and answers get reused, so the real bill should land lower, possibly around $40. Either way, it's more than I can put into it right now.
 
 ## Later: all of PubMed
 

@@ -81,5 +81,6 @@ Exam diseases' hidden answers stay in `data/benchmark.json` and aren't printed o
 
 Róbert sets the budget. The run can stop after any disease and pick up again later, because answers are saved.
 Costs are estimated in the prep output (`scripts/prep/estimate.mjs`), and the actual cost is reported with
-the results. The 10-disease prep priced at about $24 and 10.6 hours of reading before savings from answers
-shared between diseases, so 50 diseases come to roughly five times that.
+the results. The 50-disease prep (2026-09-29) prices it at about $115 and 51.5 hours of reading before savings
+from answers shared between diseases. Counting each body measure once across the stand-in bridge lists, reuse
+could bring that down to about $36 and 16 hours; the real overlap is only known once the bridges are picked.
