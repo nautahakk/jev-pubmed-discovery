@@ -9,7 +9,7 @@ import { lookupTrees, isBodyProcess } from "../../lib/mesh.mjs";
 import { stage1Request, stage2Request } from "../../lib/questions.mjs";
 import { stage1Votes, selectBridges } from "../../lib/score.mjs";
 import { naturalName } from "../../lib/benchmark.mjs";
-import { systemOne } from "../../lib/jev.mjs";
+import { systemOne, OutOfCredits } from "../../lib/jev.mjs";
 import { runPool } from "../../lib/pool.mjs";
 import { PRICE_PER_MTOK } from "../../lib/price.mjs";
 import { file, readJson, writeJson, writeLines, JEV, apiKey, progress } from "../common.mjs";
@@ -33,12 +33,22 @@ mkdirSync(file("bench"), { recursive: true });
 const cache = new Map(readJsonl(cachePath).map((r) => [r.k, r.p]));
 const key = dryRun ? null : apiKey();
 let spent = 0;
-const overBudget = () => !dryRun && spent >= maxDollars;
+let noCredits = false;
+// Stops the run at the spending cap, or when TypeSafe says the prepaid credits are used up
+const overBudget = () => !dryRun && (noCredits || spent >= maxDollars);
+const stopReason = () => (noCredits
+  ? "out of Jev credits: top up at https://console.typesafe.ai, then run the same command again (nothing already read is lost)"
+  : `stopped at the $${maxDollars} cap; run again to continue`);
 
 async function ask(body) {
-  const res = await systemOne({ apiKey: key, body });
-  spent += ((res.usage?.input_tokens ?? 0) / 1e6) * PRICE_PER_MTOK;
-  return res;
+  try {
+    const res = await systemOne({ apiKey: key, body });
+    spent += ((res.usage?.input_tokens ?? 0) / 1e6) * PRICE_PER_MTOK;
+    return res;
+  } catch (err) {
+    if (err instanceof OutOfCredits) noCredits = true;
+    throw err;
+  }
 }
 
 async function treesFor(labels) {
@@ -86,7 +96,7 @@ async function runCase({ disease }) {
     if (++n1 % 50 === 0) progress("step 1", n1, pending1.length, t1, `, $${spent.toFixed(2)} spent`);
   }, JEV);
   const left1 = todo1.length - new Set(readJsonl(s1path).map((r) => r.pmid)).size;
-  if (left1 > 0) return say(overBudget() ? `\nstopped at the $${maxDollars} cap during step 1; run again to continue` : `\n${left1} step 1 papers failed; run again to retry them`);
+  if (left1 > 0) return say(overBudget() ? `\nstep 1: ${stopReason()}` : `\n${left1} step 1 papers failed; run again to retry them`);
 
   const bridges = selectBridges(stage1Votes(readJsonl(s1path)));
   writeJson(`${dir}/bridges.json`, bridges);
@@ -136,7 +146,7 @@ async function runCase({ disease }) {
     if (++n2 % 100 === 0) progress("step 2", n2, work.length, t2, `, $${spent.toFixed(2)} spent`);
   }, JEV);
   const left2 = work.reduce((n, w) => n + w.pairs.filter((pair) => !cache.has(cacheKey(w.p.pmid, pair))).length, 0);
-  if (left2 > 0) return say(overBudget() ? `\nstopped at the $${maxDollars} cap during step 2; run again to continue` : `\n${left2} step 2 questions failed; run again to retry them`);
+  if (left2 > 0) return say(overBudget() ? `\nstep 2: ${stopReason()}` : `\n${left2} step 2 questions failed; run again to retry them`);
   writeJson(`${dir}/done.json`, { finished: new Date().toISOString() });
   say(`\ndone`);
 }
@@ -146,4 +156,4 @@ for (const d of diseases) {
   if (overBudget()) break;
   await runCase(d);
 }
-console.log(`\nspent this session: $${spent.toFixed(2)}${dryRun ? " (dry run)" : ` of a $${maxDollars} cap`}`);
+console.log(`\nspent this session: $${spent.toFixed(2)}${dryRun ? " (dry run)" : ` of a $${maxDollars} cap`}${noCredits ? ` (${stopReason()})` : ""}`);

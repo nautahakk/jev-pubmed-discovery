@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { systemOne } from "../lib/jev.mjs";
+import { systemOne, OutOfCredits } from "../lib/jev.mjs";
 
 const reply = (status, body = {}, headers = {}) => ({
   ok: status >= 200 && status < 300,
@@ -43,6 +43,29 @@ test("doesn't retry a request Jev rejects as invalid", async () => {
     /422/,
   );
   assert.equal(calls, 1);
+});
+
+test("an empty credit balance (402) is reported as out of credits, without retrying", async () => {
+  let calls = 0;
+  await assert.rejects(
+    systemOne({ apiKey: "k", body: {}, fetchImpl: async () => { calls++; return reply(402, { detail: "Payment required" }); }, sleepImpl: noSleep }),
+    OutOfCredits,
+  );
+  assert.equal(calls, 1);
+});
+
+test("a refusal that talks about the credit balance is out of credits too", async () => {
+  await assert.rejects(
+    systemOne({ apiKey: "k", body: {}, fetchImpl: async () => reply(403, { detail: "Insufficient credit balance" }), sleepImpl: noSleep }),
+    OutOfCredits,
+  );
+});
+
+test("other refusals stay ordinary errors", async () => {
+  await assert.rejects(
+    systemOne({ apiKey: "k", body: {}, fetchImpl: async () => reply(422, { detail: "bad question" }), sleepImpl: noSleep }),
+    (err) => !(err instanceof OutOfCredits) && /422/.test(err.message),
+  );
 });
 
 test("gives up after the retry limit", async () => {
