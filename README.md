@@ -50,6 +50,12 @@ One case can't show whether a rule change helps, and tuning the rules until fish
 
 It hasn't run yet. Reading the papers for 50 diseases takes on the order of $100 in Jev credits and two days or more of nonstop running, which is more than I can put into it right now.
 
+## Later: all of PubMed
+
+Each disease currently needs its own reading run. The bigger version reads all of PubMed once, about 41 million papers, and saves what every paper says about every substance and body measure. After that, any disease could be checked by counting in code, with no new Jev calls. The U.S. National Library of Medicine's SemMedDB already pulls statements out of PubMed with older text-mining tools, so it would also be a direct comparison of how well a model like Jev reads.
+
+At today's prices one pass would cost roughly $2,000 to $6,000 in Jev credits and take more than three weeks of nonstop reading at the current rate limit. That needs compute credits or a sponsor.
+
 ## Run it yourself
 
 You need Node.js 20 or newer, an API key from [TypeSafe](https://typesafe.ai) and an internet connection, since the papers come from PubMed. Nothing else to install.
