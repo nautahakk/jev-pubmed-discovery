@@ -13,6 +13,17 @@ test("a connection that drops while the response is downloading is retried", asy
   assert.equal(calls, 2);
 });
 
+test("a 408 timeout from PubMed is retried, not treated as a bad request", async () => {
+  let calls = 0;
+  const fetchImpl = async () => {
+    calls++;
+    return calls === 1 ? { ok: false, status: 408 } : { ok: true, status: 200, text: async () => "PMID- 1" };
+  };
+  const body = await eutils("efetch.fcgi", { id: "1" }, { fetchImpl, sleepImpl: async () => {} });
+  assert.equal(body, "PMID- 1");
+  assert.equal(calls, 2);
+});
+
 // PubMed's search returns at most 9,999 ids, so big queries are split into year ranges
 const perYear = (counts) => async (lo, hi) => {
   let n = 0;
