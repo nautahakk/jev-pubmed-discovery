@@ -67,9 +67,9 @@ whenever the substance and the bridge are both on it. Scored with the same rule 
 
 ## Practice, then exam
 
-1. Run every rule on the 5 practice diseases. Keep the rule with the best main number (ties go to the second
+1. Run every rule on the 25 practice diseases. Keep the rule with the best main number (ties go to the second
    number, then to the simpler rule in the order R0, R1, R1s, R2, R3).
-2. Run that rule and R0 once on the 5 exam diseases. **The exam result is the headline.** Nothing changes after it.
+2. Run that rule and R0 once on the 25 exam diseases. **The exam result is the headline.** Nothing changes after it.
 3. The fish-oil run is shown next to the practice results, but it doesn't count toward choosing the rule
    (we already know its answer) and it's never an exam case. Before this test, on 2026-09-29, the rules
    scored fish oil like this (best fish-oil-family rank): R0 #74, R1 #57, R1s #226, R2 #29, R3 #54.
