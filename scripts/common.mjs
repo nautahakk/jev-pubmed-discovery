@@ -1,16 +1,17 @@
 // Settings shared by the run scripts. The numbers here are the ones fixed in PROTOCOL.md.
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-// Data lives on D: (the C: drive on this PC is nearly full); override with DATA_DIR
-export const DATA = process.env.DATA_DIR || "D:/Jev-Discovery/data";
+// Downloads and Jev's answers go in ./data (ignored by git). Set DATA_DIR to keep them somewhere else.
+export const DATA = process.env.DATA_DIR || fileURLToPath(new URL("../data", import.meta.url));
 mkdirSync(DATA, { recursive: true });
 
 export const CUTOFF = 1985;            // papers published 1985 or earlier
 export const RAYNAUD_TERM = "raynaud disease[mh]";
 export const BRIDGE_CAP = 10000;       // papers per bridge, sampled above this
 export const SEED = 1986;
-export const JEV = { concurrency: 24, rpm: 900 }; // Jev allows 1,200/min; the rest is left for the live aphasia tool
+export const JEV = { concurrency: 24, rpm: 900 }; // Jev allows 1,200/min; the rest is left for other apps on the same key
 export const PRICE_PER_MTOK = 0.042;   // dollars per million input tokens (output is free)
 
 export const file = (name) => join(DATA, name);
