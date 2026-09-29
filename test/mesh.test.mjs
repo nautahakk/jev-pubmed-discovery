@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { isBodyProcess, treeQuery, parseTrees } from "../lib/mesh.mjs";
+import { isBodyProcess, treeQuery, parseTrees, drugActionQuery, lookupTrees } from "../lib/mesh.mjs";
 
 test("a heading is a body process when any of its tree numbers is in an allowed G branch", () => {
   assert.equal(isBodyProcess(["E01.370.600.875.500", "G09.330.380.500"]), true);
@@ -23,6 +23,22 @@ test("headings outside the G tree, or with no tree numbers, don't count", () => 
 
 test("the SPARQL query escapes quotes in labels", () => {
   assert.match(treeQuery(['Say "hi"']), /"Say \\"hi\\""@en/);
+});
+
+test("the drug-action query asks MeSH which labels have a recorded pharmacological action", () => {
+  const q = drugActionQuery(["Aspirin", 'Odd "name"']);
+  assert.match(q, /meshv:pharmacologicalAction/);
+  assert.match(q, /"Aspirin"@en "Odd \\"name\\""@en/);
+});
+
+test("a MeSH lookup that drops mid-download is retried", async () => {
+  let calls = 0;
+  const fetchImpl = async () => {
+    calls++;
+    return { ok: true, status: 200, json: async () => { if (calls === 1) throw new TypeError("terminated"); return { results: { bindings: [{ label: { value: "Heart Rate" }, tn: { value: "G09.330.380.500" } }] } }; } };
+  };
+  assert.deepEqual(await lookupTrees(["Heart Rate"], { fetchImpl, sleepImpl: async () => {} }), { "Heart Rate": ["G09.330.380.500"] });
+  assert.equal(calls, 2);
 });
 
 test("parseTrees groups tree numbers by label, without duplicates", () => {

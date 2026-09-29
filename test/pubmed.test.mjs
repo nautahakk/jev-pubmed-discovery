@@ -1,6 +1,17 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { splitYears, sampleIds } from "../lib/pubmed.mjs";
+import { splitYears, sampleIds, eutils } from "../lib/pubmed.mjs";
+
+test("a connection that drops while the response is downloading is retried", async () => {
+  let calls = 0;
+  const fetchImpl = async () => {
+    calls++;
+    return { ok: true, status: 200, text: async () => { if (calls === 1) throw new TypeError("terminated"); return "PMID- 1"; } };
+  };
+  const body = await eutils("efetch.fcgi", { id: "1" }, { fetchImpl, sleepImpl: async () => {} });
+  assert.equal(body, "PMID- 1");
+  assert.equal(calls, 2);
+});
 
 // PubMed's search returns at most 9,999 ids, so big queries are split into year ranges
 const perYear = (counts) => async (lo, hi) => {

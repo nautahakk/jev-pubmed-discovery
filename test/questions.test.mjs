@@ -33,6 +33,13 @@ test("step 2 asks one choice per measure-substance pair", () => {
   assert.match(body.questions.q1.instructions, /Platelet Aggregation/);
 });
 
+test("step 1 asks about the disease it's given, and keeps the fish-oil run's wording by default", () => {
+  const glaucoma = stage1Request(paper, ["Intraocular Pressure"], "glaucoma").body.questions.m0;
+  assert.match(glaucoma.instructions, /in people with glaucoma compared/);
+  assert.doesNotMatch(JSON.stringify(glaucoma), /raynaud/i);
+  assert.match(stage1Request(paper, ["Blood Viscosity"]).body.questions.m0.instructions, /in people with Raynaud's phenomenon compared/);
+});
+
 // The leak guards: no question may connect Raynaud's and a substance (only the paper itself can)
 test("step 2 questions never mention Raynaud's", () => {
   const { body } = stage2Request(paper, [{ measure: "Blood Viscosity", substance: "Aspirin" }]);
