@@ -1,5 +1,5 @@
 {
-  "name": "jev-discovery",
+  "name": "jev-pubmed-discovery",
   "version": "0.1.0",
   "private": true,
   "description": "Can Jev rediscover fish oil for Raynaud's from papers published before 1986?",
